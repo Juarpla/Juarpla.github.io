@@ -1,4 +1,4 @@
-name: Validate, Test and Deploy Static Web
+name: Deploy Static Web to AWS S3 bucket
 
 on:
   push:
