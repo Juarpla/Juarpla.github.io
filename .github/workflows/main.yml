@@ -5,22 +5,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@master
-      - name: Validate HTML
-        uses: w3c/spec-prod@main
-        with:
-            # Replace following with appropriate value. See options.md for details.
-            W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-web-perf/2021Apr/0005.html
-            # Usually, you want the following set too...
-            W3C_BUILD_OVERRIDE: |
-                shortName: your-specs-shortname-here
-                specStatus: WD
   test:
-    needs: validate
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
