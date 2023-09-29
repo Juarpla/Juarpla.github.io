@@ -1,0 +1,46 @@
+name: Validate, Test and Deploy Static Web
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Validate HTML
+        uses: w3c/spec-prod@main
+        with:
+            # Replace following with appropriate value. See options.md for details.
+            W3C_WG_DECISION_URL: https://lists.w3.org/Archives/Public/public-web-perf/2021Apr/0005.html
+            # Usually, you want the following set too...
+            W3C_BUILD_OVERRIDE: |
+                shortName: your-specs-shortname-here
+                specStatus: WD
+  test:
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests
+        run: npm test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@master
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-west-1 # change this to your region
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync ./public/ s3://juarpla.com --delete --exclude '.git*/*' # change this to your bucket name
